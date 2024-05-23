@@ -3,7 +3,6 @@ import { ref, getDownloadURL, getStorage, deleteObject, uploadBytes } from "fire
 
 
 
-
 async function getImageUrlByName(name) {
   const imagesRef = ref(storage, `images/${name}`);
   let response = await getDownloadURL(imagesRef);
@@ -34,7 +33,14 @@ async function uploadImage(file, name) {
   return downloadURL;
 }
 
+async function updateImage(file, name) {
 
+  const storageRef = ref(storage, `images/${name}`);
+  const snapshot = await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(snapshot.ref);
 
-export { getImageUrlByName, uploadImage, deleteImageUrlByName  };
+  return downloadURL;
+}
+
+export { getImageUrlByName, uploadImage, deleteImageUrlByName, updateImage };
 

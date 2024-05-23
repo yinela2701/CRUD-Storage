@@ -44,150 +44,19 @@ const CssTextField = styled(TextField)({
 });
 
 function App() {
-  const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [users, setUsers] = useState([]);
-  const [deleteUserFeatureFlag, setDeleteUserFeatureFlag] = useState(true);
-  let unsubscribe;
-
-  useEffect(() => {
-    getUsersCallBack();
-    unsubscribe = listenFeaturesFlags((value) => {
-      let { delete_users } = { ...value };
-      setDeleteUserFeatureFlag(delete_users);
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
-  let getUsersCallBack = async () => {
-    let response = await readUsers();
-    setUsers(response);
-  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <>
-        {users.length == 0 && <h1>No hay datos</h1>}
-        {users.length > 0 &&
-          users.map((user) => {
-            let { name, lastName, id } = { ...user };
-            return (
-              <Card key={id} sx={{ minWidth: 275 }}>
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    Name CI/CD
-                  </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    {name}
-                  </Typography>
-                  <Typography variant="h5" component="div">
-                    Last Name
-                  </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    {lastName}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  {deleteUserFeatureFlag && (
-                    <Button
-                      onClick={async () => {
-                        await deleteById(id);
-                        let response = await readUsers();
-                        await setUsers(response);
-                      }}
-                      size="small"
-                    >
-                      Eliminar
-                    </Button>
-                  )}
-                  <Button size="small">Editar</Button>
-                </CardActions>
-              </Card>
-            );
-          })}
-      </>
-      <Box sx={{ mb: 2 }} />
 
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <CssTextField
-          InputLabelProps={{
-            sx: {
-              color: "white",
-              [`&.${inputLabelClasses.shrink}`]: {
-                color: "white",
-              },
-            },
-          }}
-          label="name"
-          id="name"
-          value={name}
-          onChange={(event) => {
-            setName(event.target.value);
-          }}
-        />
-        <Box sx={{ mr: 2 }} />
-        <CssTextField
-          InputLabelProps={{
-            sx: {
-              color: "white",
-              [`&.${inputLabelClasses.shrink}`]: {
-                color: "white",
-              },
-            },
-          }}
-          label="name"
-          id="name"
-          value={lastName}
-          onChange={(event) => {
-            setLastName(event.target.value);
-          }}
-        />
+      <div>
+        <input type="text" id="imageName-input" />
+        <input type="file" id="file-input" />
       </div>
       <Box sx={{ mb: 2 }} />
       <Button
         onClick={async () => {
-          await addUser(name, lastName);
-          let response = await readUsers();
-          await setUsers(response);
-          setLastName("");
-          setUsers("");
-        }}
-        variant="contained"
-      >
-        Agregar
-      </Button>
-      <Box sx={{ mb: 2 }} />
-      <Button
-        onClick={async () => {
-          let response = await signUp(
-            "ricardoandb@gmail.com",
-            "siyofueraladronmerobariatusbesos"
-          );
-          console.log("response", response);
-        }}
-        variant="contained"
-      >
-        Create User Auth
-      </Button>
-      <Box sx={{ mb: 2 }} />
-      <Button
-        onClick={async () => {
-          let response = await signIn(
-            "ricardoandb@gmail.com",
-            "siyofueraladronmerobariatusbesos"
-          );
-          console.log("response", response);
-        }}
-        variant="contained"
-      >
-        Login User Auth
-      </Button>
-      <Box sx={{ mb: 2 }} />
-      <Button
-        onClick={async () => {
-          let response = await getImageUrlByName("one_way.png");
+          const imageName = document.getElementById('imageName-input').value;
+          let response = await getImageUrlByName(imageName);
           window.open(response);
         }}
         variant="contained"
@@ -199,7 +68,8 @@ function App() {
 
       <Button
         onClick={async () => {
-          let response = await deleteImageUrlByName("Mountains.jpg");
+          const imageName = document.getElementById('imageName-input').value;
+          let response = await deleteImageUrlByName(imageName);
           console.log(response.message);
         }}
         variant="contained"
@@ -207,9 +77,9 @@ function App() {
         Delete Image
       </Button>
 
-
-      <input type="file" id="file-input" />
-      <button
+      <Box sx={{ mb: 2 }} />
+      
+      <Button
         onClick={async () => {
           const input = document.getElementById('file-input');
           const file = input.files[0]; // Obtener el primer archivo seleccionado
@@ -218,9 +88,27 @@ function App() {
           const downloadURL = await uploadImage(file, file.name);
           console.log('URL de descarga de la imagen:', downloadURL);
         }}
+        variant="contained"
       >
         Subir imagen
-      </button>
+      </Button>
+
+      <Box sx={{ mb: 2 }} />
+
+      <Button
+        onClick={async () => {
+          const imageName = document.getElementById('imageName-input').value;
+          const input = document.getElementById('file-input');
+          const file = input.files[0]; // Obtener el primer archivo seleccionado
+
+          // Llamar a la función uploadImage para subir la imagen
+          const downloadURL = await uploadImage(file, imageName);
+          console.log('URL de descarga de la imagen:', downloadURL);
+        }}
+        variant="contained"
+      >
+        Actualizar Imagen
+      </Button>
 
       
     </div>
